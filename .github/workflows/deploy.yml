@@ -26,11 +26,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: build
+      - name: Build
         env:
           BASE_PATH: '/${{ github.event.repository.name }}'
         run: |
           pnpm run build
+
+      - name: Create .nojekyll
+        run: touch build/.nojekyll
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
