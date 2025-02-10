@@ -2,7 +2,7 @@
 	import chroma from 'chroma-js';
 
 	// Array of color set objects; each one has an id, variable name, and a base color.
-	let colorSets = $state([{ id: 0, varName: 'primary-color', baseColor: '#3498db' }]);
+	let colorSets = $state([{ id: 0, varName: 'bg-primary', baseColor: '#3498db' }]);
 	let colorSetCounter = 1; // Next id to use
 
 	// Holds the generated CSS output string.
@@ -110,8 +110,34 @@
 	</style>
 </svelte:head>
 
-<main class="flex min-h-screen flex-col items-center bg-gray-50 p-4">
-	<h2 class="mb-4 text-2xl font-bold">Dynamic Shades to CSS Variables</h2>
+<main class="flex min-h-screen flex-col items-center gap-6 bg-gray-50 p-4">
+	<h2 class="text-2xl font-bold">Dynamic Shades to CSS Variables</h2>
+	<div class="flex max-w-lg flex-col gap-4">
+		<p>
+			The purpose of this tool is to generate CSS variables for different shades of a base color.
+			You can add multiple color sets and generate the corresponding CSS variables, which will be
+			displayed below along with a preview of the colors.
+		</p>
+		<p>
+			The primary purpose of this tool is to assist in defining custom color palettes for
+			<strong>Tailwind CSS v4</strong>. The generated CSS variables can be used within Tailwind’s
+			<code>{'@theme { ... }'}</code> directive, allowing you to
+			<strong>modify the default color palette</strong> or
+			<strong>introduce new colors</strong> that integrate seamlessly with Tailwind utility classes.
+		</p>
+		<p>
+			By using these theme variables, you can ensure consistency across your design while leveraging
+			Tailwind’s utility-based approach for styling.
+		</p>
+		<!-- Added link to docs on the subject -->
+		<p>
+			For more details, see docs on the subject <a
+				class="font-bold text-blue-500"
+				href="https://tailwindcss.com/docs/theme">https://tailwindcss.com/docs/theme</a
+			>.
+		</p>
+	</div>
+
 	<div class="mb-4 flex justify-center space-x-4">
 		<button class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700" onclick={addColorSet}
 			>Add Another Color</button
@@ -135,7 +161,7 @@
 					type="text"
 					id={'varName-' + cs.id}
 					bind:value={cs.varName}
-					placeholder="primary-color"
+					placeholder="bg-primary"
 					class="w-32 rounded border border-gray-300 p-2"
 				/>
 
@@ -165,17 +191,25 @@
 		>{cssOutput}</code
 	>
 
+	<div>
+		<h2 class="text-4xl font-bold">Example</h2>
+	</div>
+
 	<!-- Dummy boxes to preview the generated colors -->
-	<div
-		id="dummyShades"
-		class="mt-4 grid w-full grid-cols-[repeat(auto-fill,minmax(6rem,1fr))] gap-4 rounded-2xl bg-black p-4"
-	>
-		{#each dummyBoxes as box}
-			<div
-				class="flex h-24 w-24 items-center justify-center text-sm text-white shadow p-2 font-bold"
-				style="background: {box.cssColor};"
-			>
-				{box.varName}-{box.shade}
+	<div id="dummyShades" class="flex flex-col gap-4 w-full">
+		{#each colorSets as cs}
+			<div class="rounded-2xl bg-black p-4">
+				<h3 class="text-white mb-2 font-bold">{cs.varName}</h3>
+				<div class="flex flex-wrap">
+					{#each dummyBoxes.filter(box => box.varName === cs.varName) as box}
+						<div
+							class="flex h-24 w-24 items-center justify-center p-2 text-sm font-bold text-white"
+							style="background: {box.cssColor};"
+						>
+							{box.varName}-{box.shade}
+						</div>
+					{/each}
+				</div>
 			</div>
 		{/each}
 	</div>
