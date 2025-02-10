@@ -15,7 +15,7 @@ A tool for generating color palettes compatible with Tailwind CSS v4's new CSS v
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/generate-colors-tailwindv4.git
+git clone https://github.com/Maxiviper117/generate-colors-tailwindv4.git
 
 # Navigate to project directory
 cd generate-colors-tailwindv4
