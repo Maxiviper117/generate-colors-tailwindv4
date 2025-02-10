@@ -14,6 +14,9 @@ importers:
       chroma-js:
         specifier: ^3.1.2
         version: 3.1.2
+      lucide-svelte:
+        specifier: ^0.475.0
+        version: 0.475.0(svelte@5.19.9)
     devDependencies:
       '@eslint/compat':
         specifier: ^1.2.5
@@ -1008,6 +1011,11 @@ packages:
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+
+  lucide-svelte@0.475.0:
+    resolution: {integrity: sha512-N5+hFTPHaZe9HhqJDxxxODfYuOmI6v+JIowzERcea/uxytN/JZlehVTcINBNp8wMo7l6ov1Jf5srrDbkI/WsJg==}
+    peerDependencies:
+      svelte: ^3 || ^4 || ^5.0.0-next.42
 
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
@@ -2196,6 +2204,10 @@ snapshots:
       p-locate: 5.0.0
 
   lodash.merge@4.6.2: {}
+
+  lucide-svelte@0.475.0(svelte@5.19.9):
+    dependencies:
+      svelte: 5.19.9
 
   magic-string@0.30.17:
     dependencies:
