@@ -1,62 +1,51 @@
 name: Deploy to GitHub Pages
 
 on:
+  # Trigger the workflow on pushes to the main branch
   push:
-    branches: 'main'
+    branches: ['main']
+
+  # Allows manual triggering of the workflow
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build_site:
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
 
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
+          cache: npm
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: pnpm install
 
-      - name: Build
+      - name: Build Project
         env:
           BASE_PATH: '/${{ github.event.repository.name }}'
-        run: |
-          pnpm run build
+        run: pnpm run build
 
-      - name: Create .nojekyll
-        run: touch build/.nojekyll
-
-      - name: Remove README file
-        run: rm -f build/README.md build/README
-
-      - name: Upload Artifacts
+      - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'build/'
+          path: 'docs/'
 
   deploy:
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
-    needs: build_site
+    needs: build
     runs-on: ubuntu-latest
-
-    permissions:
-      pages: write
-      id-token: write
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Deploy
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
