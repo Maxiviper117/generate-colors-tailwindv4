@@ -158,7 +158,7 @@
 	</div>
 	<!-- Change color modes -->
 	<div
-		class="fixed right-0 bottom-5 mt-4 mr-4 flex w-full max-w-lg items-center gap-4 rounded-lg bg-white p-4 shadow-md"
+		class="fixed right-0 bottom-5 mt-4 mr-4 flex w-full max-w-lg items-center gap-4 rounded-lg bg-white p-4 shadow-md z-10"
 	>
 		<label
 			class="font-medium"
