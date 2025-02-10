@@ -9,8 +9,8 @@ const config = {
 
 	kit: {
 		adapter: adapter({
-			pages: 'docs',
-			assets: 'docs',
+			pages: 'build',
+			assets: 'build',
 			fallback: '404.html',
 			precompress: false,
 			strict: false
