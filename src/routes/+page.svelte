@@ -3,7 +3,7 @@
 	import { Copy } from 'lucide-svelte';
 
 	// Array of color set objects; each one has an id, variable name, and a base color.
-	let colorSets = $state([{ id: 0, varName: 'bg-primary', baseColor: '#3498db' }]);
+	let colorSets = $state([{ id: 0, varName: 'color-primary', baseColor: '#3498db' }]);
 	let colorSetCounter = 1; // Next id to use
 
 	const colorModeTooltip = {
@@ -117,6 +117,10 @@
 				console.error('Failed to copy: ', err);
 			});
 	}
+
+	$effect(() => {
+		generateAndDisplayShades();
+	});
 </script>
 
 <!-- Inject the dynamic CSS variables into the document head -->
@@ -158,14 +162,15 @@
 	</div>
 	<!-- Change color modes -->
 	<div
-		class="fixed right-0 bottom-5 mt-4 mr-4 flex w-full max-w-lg items-center gap-4 rounded-lg bg-white p-4 shadow-md z-10"
+		class="fixed right-0 bottom-5 z-10 mt-4 mr-4 flex w-full max-w-lg items-center gap-4 rounded-lg bg-white p-4 shadow-md"
 	>
-		<label
-			class="font-medium"
-			for="colorMode"
-			title="With dropdown selected you can use arrow keys (up and down) to change mode"
-			>COLOR MODE:</label
-		>
+		<label class="tooltip rounded bg-black px-2 py-2 font-medium text-white" for="colorMode"
+			>Color Mode:
+
+			<span class="tooltip-text">
+				With dropdown selected you can use arrow keys (up and down) to change mode
+			</span>
+		</label>
 		<select
 			id="colorMode"
 			bind:value={colorMode}
@@ -181,7 +186,10 @@
 	<div class="mb-4 flex justify-center space-x-4">
 		<button
 			class="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 active:scale-95"
-			onclick={addColorSet}>Add Another Color</button
+			onclick={() => {
+				addColorSet();
+				generateAndDisplayShades();
+			}}>Add Another Color</button
 		>
 		<button
 			class="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 active:scale-95"
@@ -194,9 +202,14 @@
 	</div>
 
 	<!-- Loop through the color sets -->
-	<div class="flex flex-col items-center gap-4 rounded-lg bg-white p-4 shadow-md">
+	<div class="flex max-w-lg flex-col items-center gap-4 rounded-lg bg-white p-4 shadow-md">
+		<p class="w-full">
+			Change the name of the css variables and the base color to generate different shades. The
+			preview will update automatically. Example: color-primary will output:
+		</p>
+		<code class="code"> --color-primary-100, --color-primary-200... etc. </code>
 		{#each colorSets as cs, index (cs.id)}
-			<div class="flex flex-wrap items-center gap-2" id={'colorSet-' + cs.id}>
+			<div class="flex flex-wrap items-center justify-start gap-2" id={'colorSet-' + cs.id}>
 				<label class="font-medium" for={'varName-' + cs.id}>
 					CSS VAR #{index + 1}:
 				</label>
@@ -215,13 +228,19 @@
 					bind:value={cs.baseColor}
 					placeholder="#3498db"
 					class="min-h-10 rounded border border-gray-300 p-2"
+					onchange={() => generateAndDisplayShades()}
 				/>
 
 				<button
-					class="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-700"
-					onclick={() => removeColorSet(cs.id)}
+					class="tooltip rounded bg-red-500 px-3 py-1 font-bold text-white hover:bg-red-700"
+					onclick={() => {
+						removeColorSet(cs.id);
+						generateAndDisplayShades();
+					}}
+					hidden={index === 0}
 				>
 					Remove
+					<span class="tooltip-text"> Remove this color set </span>
 				</button>
 			</div>
 		{/each}
@@ -230,19 +249,22 @@
 	<!-- Display the generated CSS variables -->
 	<div class="flex w-full flex-col items-center gap-4">
 		<h2 class="text-2xl font-bold">Generated CSS Variables</h2>
-		<code
-			id="output"
-			class="relative mt-4 block w-4/5 max-w-lg overflow-x-auto rounded bg-gray-800 p-4 whitespace-pre-wrap text-white"
-			>{cssOutput}
+		<div class="relative mt-4 w-4/5 max-w-lg">
+			<code
+				class="block w-full overflow-x-auto rounded bg-gray-800 p-4 whitespace-pre-wrap text-white"
+			>
+				{cssOutput}
+			</code>
 			<button
-				class="absolute top-0 right-0 mt-4 mr-4 inline-flex items-center rounded border border-gray-300 px-2 text-sm hover:border-gray-500 hover:bg-gray-700 active:scale-95"
+				class="absolute top-0 right-0 mt-4 mr-4 inline-flex items-center gap-1 rounded border border-gray-300 px-2 text-sm text-white hover:border-gray-500 hover:bg-gray-700 active:scale-95"
 				onclick={copyToClipboard}
 			>
-				<Copy color="white" size={10} />
-				copy</button
-			>
-		</code>
+				<Copy color="white" size={10} class="" />
+				copy
+			</button>
+		</div>
 	</div>
+
 	<div class="flex flex-col items-center gap-4 rounded-lg bg-white p-4 shadow-md">
 		<div>
 			<h2 class="text-4xl font-bold">Visual Preview of the Generated Colors</h2>
@@ -268,3 +290,41 @@
 		</div>
 	</div>
 </main>
+
+<style>
+	.code {
+		font-size: 0.9rem;
+		color: whitesmoke;
+
+		background-color: var(--color-gray-800); /* Added background color for better contrast */
+		border-radius: 4px; /* Added border radius for aesthetics */
+		padding: 0.5rem; /* Added padding for spacing */
+	}
+	.tooltip {
+		position: relative;
+		display: inline-block;
+	}
+
+	.tooltip-text {
+		opacity: 0;
+		visibility: hidden;
+		width: max-content;
+		background-color: rgba(0, 0, 0, 0.75);
+		color: #fff;
+		text-align: center;
+		border-radius: 4px;
+		padding: 0.4rem 0.6rem;
+		font-size: 0.75rem;
+		position: absolute;
+		z-index: 10;
+		bottom: 120%; /* Position above the button */
+		left: 50%;
+		transform: translateX(-50%);
+		transition: opacity 0.2s ease-in-out;
+		white-space: nowrap;
+	}
+	.tooltip:hover .tooltip-text {
+		opacity: 1;
+		visibility: visible;
+	}
+</style>
