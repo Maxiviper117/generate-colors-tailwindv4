@@ -1,10 +1,27 @@
 <script lang="ts">
 	import chroma from 'chroma-js';
+	import { Copy } from 'lucide-svelte';
 
 	// Array of color set objects; each one has an id, variable name, and a base color.
 	let colorSets = $state([{ id: 0, varName: 'bg-primary', baseColor: '#3498db' }]);
 	let colorSetCounter = 1; // Next id to use
 
+	const colorModeTooltip = {
+		hcl: 'HCL (Hue, Chroma, Lightness)',
+		hsi: 'HSI (Hue, Saturation, Intensity)',
+		hsl: 'HSL (Hue, Saturation, Lightness)',
+		hsv: 'HSV (Hue, Saturation, Value)',
+		lab: 'Lab (Lightness, a, b)',
+		lch: 'LCH (Lightness, Chroma, Hue)',
+		lrgb: 'Linear RGB',
+		oklab: 'OkLab (Perceptual lightness, a, b)',
+		oklch: 'OkLCH (Perceptual lightness, Chroma, Hue)',
+		rgb: 'RGB'
+	};
+
+	let colorMode = $state<
+		'hcl' | 'hsi' | 'hsl' | 'hsv' | 'lab' | 'lch' | 'lrgb' | 'oklab' | 'oklch' | 'rgb'
+	>('oklab');
 	// Holds the generated CSS output string.
 	let cssOutput = $state('');
 
@@ -43,7 +60,7 @@
 			.scale(['white', baseColor, 'black'])
 			.domain([0, 0.65, 1])
 			.padding([0.2, 0.2])
-			.mode('oklch')
+			.mode(colorMode)
 			.colors(9);
 
 		return {
@@ -110,53 +127,79 @@
 	</style>
 </svelte:head>
 
-<main class="flex min-h-screen flex-col items-center gap-6 bg-gray-50 p-4">
-	<h2 class="text-2xl font-bold">Dynamic Shades to CSS Variables</h2>
-	<div class="flex max-w-lg flex-col gap-4">
-		<p>
-			The purpose of this tool is to generate CSS variables for different shades of a base color.
-			You can add multiple color sets and generate the corresponding CSS variables, which will be
-			displayed below along with a preview of the colors.
-		</p>
-		<p>
-			The primary purpose of this tool is to assist in defining custom color palettes for
-			<strong>Tailwind CSS v4</strong>. The generated CSS variables can be used within Tailwind’s
-			<code>{'@theme { ... }'}</code> directive, allowing you to
-			<strong>modify the default color palette</strong> or
-			<strong>introduce new colors</strong> that integrate seamlessly with Tailwind utility classes.
-		</p>
-		<p>
-			By using these theme variables, you can ensure consistency across your design while leveraging
-			Tailwind’s utility-based approach for styling.
-		</p>
-		<!-- Added link to docs on the subject -->
-		<p>
-			For more details, see docs on the subject <a
-				class="font-bold text-blue-500"
-				href="https://tailwindcss.com/docs/theme">https://tailwindcss.com/docs/theme</a
-			>.
-		</p>
+<main class="flex min-h-screen flex-col items-center gap-6 bg-gray-50 p-4 pb-36">
+	<div class="flex max-w-lg flex-col items-center gap-4 rounded-lg bg-white p-4 shadow-md">
+		<h2 class="text-2xl font-bold">Dynamic Shades to CSS Variables</h2>
+		<div class="flex max-w-lg flex-col gap-4">
+			<p>
+				The purpose of this tool is to generate CSS variables for different shades of a base color.
+				You can add multiple color sets and generate the corresponding CSS variables, which will be
+				displayed below along with a preview of the colors.
+			</p>
+			<p>
+				The primary purpose of this tool is to assist in defining custom color palettes for
+				<strong>Tailwind CSS v4</strong>. The generated CSS variables can be used within Tailwind’s
+				<code>{'@theme { ... }'}</code> directive, allowing you to
+				<strong>modify the default color palette</strong> or
+				<strong>introduce new colors</strong> that integrate seamlessly with Tailwind utility classes.
+			</p>
+			<p>
+				By using these theme variables, you can ensure consistency across your design while
+				leveraging Tailwind’s utility-based approach for styling.
+			</p>
+			<!-- Added link to docs on the subject -->
+			<p>
+				For more details, see docs on the subject <a
+					class="font-bold text-blue-500"
+					href="https://tailwindcss.com/docs/theme">https://tailwindcss.com/docs/theme</a
+				>.
+			</p>
+		</div>
+	</div>
+	<!-- Change color modes -->
+	<div
+		class="fixed right-0 bottom-5 mt-4 mr-4 flex w-full max-w-lg items-center gap-4 rounded-lg bg-white p-4 shadow-md"
+	>
+		<label
+			class="font-medium"
+			for="colorMode"
+			title="With dropdown selected you can use arrow keys (up and down) to change mode"
+			>COLOR MODE:</label
+		>
+		<select
+			id="colorMode"
+			bind:value={colorMode}
+			class="rounded border border-gray-300 p-2"
+			onchange={generateAndDisplayShades}
+		>
+			{#each Object.entries(colorModeTooltip) as [mode, tooltip]}
+				<option value={mode}>{tooltip}</option>
+			{/each}
+		</select>
 	</div>
 
 	<div class="mb-4 flex justify-center space-x-4">
-		<button class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700" onclick={addColorSet}
-			>Add Another Color</button
+		<button
+			class="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 active:scale-95"
+			onclick={addColorSet}>Add Another Color</button
 		>
 		<button
-			class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700"
+			class="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 active:scale-95"
 			onclick={generateAndDisplayShades}>Generate CSS Vars</button
 		>
-		<button
+		<!-- <button
 			class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700"
 			onclick={copyToClipboard}>Copy Output</button
-		>
+		> -->
 	</div>
 
 	<!-- Loop through the color sets -->
-	<div class="mb-4 flex w-full flex-col items-center gap-4">
-		{#each colorSets as cs (cs.id)}
+	<div class="flex flex-col items-center gap-4 rounded-lg bg-white p-4 shadow-md">
+		{#each colorSets as cs, index (cs.id)}
 			<div class="flex flex-wrap items-center gap-2" id={'colorSet-' + cs.id}>
-				<label class="font-medium" for={'varName-' + cs.id}>Variable Name:</label>
+				<label class="font-medium" for={'varName-' + cs.id}>
+					CSS VAR #{index + 1}:
+				</label>
 				<input
 					type="text"
 					id={'varName-' + cs.id}
@@ -185,32 +228,43 @@
 	</div>
 
 	<!-- Display the generated CSS variables -->
-	<code
-		id="output"
-		class="mt-4 block w-4/5 max-w-lg overflow-x-auto rounded bg-gray-800 p-4 whitespace-pre-wrap text-white"
-		>{cssOutput}</code
-	>
-
-	<div>
-		<h2 class="text-4xl font-bold">Example</h2>
+	<div class="flex w-full flex-col items-center gap-4">
+		<h2 class="text-2xl font-bold">Generated CSS Variables</h2>
+		<code
+			id="output"
+			class="relative mt-4 block w-4/5 max-w-lg overflow-x-auto rounded bg-gray-800 p-4 whitespace-pre-wrap text-white"
+			>{cssOutput}
+			<button
+				class="absolute top-0 right-0 mt-4 mr-4 inline-flex items-center rounded border border-gray-300 px-2 text-sm hover:border-gray-500 hover:bg-gray-700 active:scale-95"
+				onclick={copyToClipboard}
+			>
+				<Copy color="white" size={10} />
+				copy</button
+			>
+		</code>
 	</div>
+	<div class="flex flex-col items-center gap-4 rounded-lg bg-white p-4 shadow-md">
+		<div>
+			<h2 class="text-4xl font-bold">Visual Preview of the Generated Colors</h2>
+		</div>
 
-	<!-- Dummy boxes to preview the generated colors -->
-	<div id="dummyShades" class="flex flex-col gap-4 w-full">
-		{#each colorSets as cs}
-			<div class="rounded-2xl bg-black p-4">
-				<h3 class="text-white mb-2 font-bold">{cs.varName}</h3>
-				<div class="flex flex-wrap">
-					{#each dummyBoxes.filter(box => box.varName === cs.varName) as box}
-						<div
-							class="flex h-24 w-24 items-center justify-center p-2 text-sm font-bold text-white"
-							style="background: {box.cssColor};"
-						>
-							{box.varName}-{box.shade}
-						</div>
-					{/each}
+		<!-- Dummy boxes to preview the generated colors -->
+		<div id="dummyShades" class="flex w-full flex-col gap-4">
+			{#each colorSets as cs}
+				<div class="rounded-2xl bg-black p-4">
+					<h3 class="mb-2 font-bold text-white">{cs.varName}</h3>
+					<div class="flex flex-wrap">
+						{#each dummyBoxes.filter((box) => box.varName === cs.varName) as box}
+							<div
+								class="flex h-24 w-24 items-center justify-center p-2 text-sm font-bold text-white"
+								style="background: {box.cssColor};"
+							>
+								{box.varName}-{box.shade}
+							</div>
+						{/each}
+					</div>
 				</div>
-			</div>
-		{/each}
+			{/each}
+		</div>
 	</div>
 </main>
