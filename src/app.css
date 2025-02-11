@@ -1,1 +1,30 @@
 @import 'tailwindcss';
+
+
+@theme {
+    --radius-sm: 0.125rem;
+    --radius-md: 0.375rem; /* Added medium radius variable */
+    --radius-lg: 0.5rem;  /* Added large radius variable */
+    --radius-xl: 0.75rem; /* Added extra large radius variable */
+}
+
+
+@layer base {
+
+    h1 {
+        @apply text-2xl font-bold;
+    }
+    
+
+    h2 {
+        @apply text-xl font-bold;
+    }
+
+    h3 {
+        @apply text-lg font-medium;
+    }
+    
+    p {
+        @apply text-base text-gray-700;
+    }
+}
