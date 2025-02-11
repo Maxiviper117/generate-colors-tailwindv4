@@ -2,6 +2,10 @@
 
 A tool for generating color palettes compatible with Tailwind CSS v4's new CSS variable-based theming system.
 
+## GitHub Page Link
+
+https://maxiviper117.github.io/generate-colors-tailwindv4/
+
 ## Features
 
 - Generate complete color shade palettes from a base color
