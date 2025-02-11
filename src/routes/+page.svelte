@@ -5,6 +5,19 @@
 	// Array of color set objects; each one has an id, variable name, and a base color.
 	let colorSets = $state([{ id: 0, varName: 'color-primary', baseColor: '#3498db' }]);
 	let colorSetCounter = 1; // Next id to use
+	let scaleCorrectLightness = $state(false);
+	let scaleGamma = $state(1.0);
+	let scalePadding = $state([0.2, 0.2]);
+
+	function reset() {
+		colorSets = [{ id: 0, varName: 'color-primary', baseColor: '#3498db' }];
+		colorSetCounter = 1;
+		scaleCorrectLightness = false;
+		scaleGamma = 1.0;
+		scalePadding = [0.2, 0.2];
+
+		generateAndDisplayShades(); // Call to update shades after reset
+	}
 
 	const colorModeTooltip = {
 		hcl: 'HCL (Hue, Chroma, Lightness)',
@@ -58,8 +71,10 @@
 	function generateShades(baseColor: string) {
 		const scale = chroma
 			.scale(['white', baseColor, 'black'])
+			.correctLightness(scaleCorrectLightness)
+			.gamma(scaleGamma)
 			.domain([0, 0.65, 1])
-			.padding([0.2, 0.2])
+			.padding(scalePadding)
 			.mode(colorMode)
 			.colors(9);
 
@@ -132,9 +147,9 @@
 </svelte:head>
 
 <main class="flex min-h-screen flex-col items-center gap-6 bg-gray-50 p-4 pb-36">
-	<div class="flex max-w-lg flex-col items-center gap-4 rounded-lg bg-white p-4 shadow-md">
+	<div class="flex max-w-2xl flex-col items-center gap-4 rounded-lg bg-white p-4 shadow-md">
 		<h2 class="text-2xl font-bold">Dynamic Shades to CSS Variables</h2>
-		<div class="flex max-w-lg flex-col gap-4">
+		<div class="flex max-w-2xl flex-col gap-4">
 			<p>
 				The purpose of this tool is to generate CSS variables for different shades of a base color.
 				You can add multiple color sets and generate the corresponding CSS variables, which will be
@@ -162,7 +177,7 @@
 	</div>
 	<!-- Change color modes -->
 	<div
-		class="fixed right-0 bottom-5 z-10 mt-4 mr-4 flex w-full max-w-lg items-center gap-4 rounded-lg bg-white p-4 shadow-md"
+		class="fixed right-0 bottom-5 z-10 mt-4 mr-4 flex w-full max-w-2xl items-center gap-4 rounded-lg bg-white p-4 shadow-md"
 	>
 		<label class="tooltip rounded bg-black px-2 py-2 font-medium text-white" for="colorMode"
 			>Color Mode:
@@ -183,16 +198,16 @@
 		</select>
 	</div>
 
-	<div class="mb-4 flex justify-center space-x-4">
+	<div class="flex w-full max-w-2xl justify-center gap-4 rounded-lg bg-white p-4 shadow-md">
 		<button
-			class="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 active:scale-95"
+			class="rounded bg-blue-500 px-4 py-2 font-bold text-white transition hover:scale-105 hover:bg-blue-700 active:scale-95"
 			onclick={() => {
 				addColorSet();
 				generateAndDisplayShades();
 			}}>Add Another Color</button
 		>
 		<button
-			class="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 active:scale-95"
+			class="rounded bg-blue-500 px-4 py-2 font-bold text-white transition hover:scale-105 hover:bg-blue-700 active:scale-95"
 			onclick={generateAndDisplayShades}>Generate CSS Vars</button
 		>
 		<!-- <button
@@ -202,7 +217,7 @@
 	</div>
 
 	<!-- Loop through the color sets -->
-	<div class="flex max-w-lg flex-col items-center gap-4 rounded-lg bg-white p-4 shadow-md">
+	<div class="flex max-w-2xl flex-col items-center gap-4 rounded-lg bg-white p-4 shadow-md">
 		<p class="w-full">
 			Change the name of the css variables and the base color to generate different shades. The
 			preview will update automatically. Example: color-primary will output:
@@ -247,16 +262,16 @@
 	</div>
 
 	<!-- Display the generated CSS variables -->
-	<div class="flex w-full flex-col items-center gap-4">
+	<div class="flex w-full max-w-2xl flex-col items-center gap-4 rounded-lg bg-white p-4 shadow-md">
 		<h2 class="text-2xl font-bold">Generated CSS Variables</h2>
-		<div class="relative mt-4 w-4/5 max-w-lg">
+		<div class="relative mt-4 w-4/5 max-w-2xl">
 			<code
 				class="block w-full overflow-x-auto rounded bg-gray-800 p-4 whitespace-pre-wrap text-white"
 			>
 				{cssOutput}
 			</code>
 			<button
-				class="absolute top-0 right-0 mt-4 mr-4 inline-flex items-center gap-1 rounded border border-gray-300 px-2 text-sm text-white hover:border-gray-500 hover:bg-gray-700 active:scale-95"
+				class="absolute top-0 right-0 mt-4 mr-4 inline-flex items-baseline gap-1 rounded border border-gray-300 px-2 text-sm text-white transition hover:scale-105 hover:border-gray-500 hover:bg-gray-700 hover:shadow-[0px_0px_10px_rgba(255,255,255,1)] active:scale-95"
 				onclick={copyToClipboard}
 			>
 				<Copy color="white" size={10} class="" />
@@ -266,8 +281,51 @@
 	</div>
 
 	<div class="flex flex-col items-center gap-4 rounded-lg bg-white p-4 shadow-md">
-		<div>
-			<h2 class="text-4xl font-bold">Visual Preview of the Generated Colors</h2>
+		<div class="flex w-full flex-col justify-between items-center gap-4">
+			<h2 class="text-4xl font-bold">Preview Colors</h2>
+			<button onclick={reset} class="rounded bg-red-500 px-4 py-2 font-bold text-white transition hover:bg-red-700 active:scale-95">Reset</button>
+		</div>
+		<div class="flex min-w-48 flex-col justify-center gap-4">
+			<div class="flex flex-col">
+				<p class="tooltip relative flex items-center gap-2">
+					<span class="font-medium"
+						>Left Padding:<span class="w-[50px] px-4">{scalePadding[0]}</span></span
+					>
+					<span class="tooltip-text absolute">Adjust left padding</span>
+				</p>
+				<input type="range" min="0" max="1" step="0.01" bind:value={scalePadding[0]} />
+				<p class="tooltip relative flex items-center gap-2">
+					<span class="font-medium"
+						>Right Padding:<span class="w-[50px] px-4">{scalePadding[1]}</span></span
+					>
+					<span class="tooltip-text absolute">Adjust right padding</span>
+				</p>
+				<input type="range" min="0" max="1" step="0.01" bind:value={scalePadding[1]} />
+			</div>
+			<p class="flex items-center gap-2">
+				<span class="font-medium">Correct Lightness</span>
+				<input
+					bind:checked={scaleCorrectLightness}
+					type="checkbox"
+					class="h-4 w-4 rounded border-gray-300 text-blue-600"
+				/>
+			</p>
+			<p class="tooltip relative flex items-center gap-2">
+				<span class="font-medium">Gamma Shift:</span>
+				<span>{scaleGamma}</span>
+				<span class="tooltip-text"
+					>Gamma-correction can be used to "shift" a scale's center more the the beginning {'(gamma < 1)'}
+					or end {'(gamma > 1)'}, typically used to "even" the lightness gradient. Default is 1.</span
+				>
+			</p>
+			<input
+				type="range"
+				min="0"
+				max="2"
+				step="0.01"
+				bind:value={scaleGamma}
+				disabled={scaleCorrectLightness}
+			/>
 		</div>
 
 		<!-- Dummy boxes to preview the generated colors -->
@@ -308,8 +366,8 @@
 	.tooltip-text {
 		opacity: 0;
 		visibility: hidden;
-		width: max-content;
-		background-color: rgba(0, 0, 0, 0.75);
+		max-width: 500px; /* Set the maximum width */
+		background-color: rgba(0, 0, 0, 1);
 		color: #fff;
 		text-align: center;
 		border-radius: 4px;
@@ -321,7 +379,7 @@
 		left: 50%;
 		transform: translateX(-50%);
 		transition: opacity 0.2s ease-in-out;
-		white-space: nowrap;
+		white-space: normal; /* Allow text wrapping */
 	}
 	.tooltip:hover .tooltip-text {
 		opacity: 1;

@@ -22,6 +22,13 @@ const config = {
 			type: 'hash',
 			resolution: 'client'
 		}
+	},
+	vitePlugin: {
+		inspector: {
+			toggleKeyCombo: 'alt-x',
+			showToggleButton: 'always',
+			toggleButtonPos: 'bottom-left'
+		}
 	}
 };
 
