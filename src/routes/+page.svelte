@@ -10,7 +10,7 @@
 	let scalePadding = $state([0.2, 0.2]);
 
 	function reset() {
-		colorSets = [{ id: 0, varName: 'color-primary', baseColor: '#3498db' }];
+		// colorSets = [{ id: 0, varName: 'color-primary', baseColor: '#3498db' }];
 		colorSetCounter = 1;
 		scaleCorrectLightness = false;
 		scaleGamma = 1.0;
@@ -366,6 +366,7 @@
 	.tooltip-text {
 		opacity: 0;
 		visibility: hidden;
+		width: 100%; /* Changed from 100 to 100% for proper width definition */
 		max-width: 500px; /* Set the maximum width */
 		background-color: rgba(0, 0, 0, 1);
 		color: #fff;
