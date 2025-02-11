@@ -9,6 +9,7 @@
 	let scaleCorrectLightness = $state(false);
 	let scaleGamma = $state(1.0);
 	let scalePadding = $state([0.2, 0.2]);
+	let previewDarkToggle = $state(false);
 
 	function reset() {
 		// colorSets = [{ id: 0, varName: 'color-primary', baseColor: '#3498db' }];
@@ -185,7 +186,7 @@
 				</p>
 			</div>
 		</div>
-		<div class="flex items-center justify-center">
+		<!-- <div class="flex items-center justify-center">
 			<div class="">
 				<button
 					class="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-4 py-2 font-medium hover:bg-gray-100"
@@ -205,14 +206,24 @@
 					Generate Variables</button
 				>
 			</div>
-		</div>
-		<div class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow">
+		</div> -->
+		<div class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow relative">
+			<button
+					class="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-4 py-2 font-medium hover:bg-gray-100 absolute top-5 right-5"
+					onclick={() => {
+						addColorSet();
+						generateAndDisplayShades();
+					}}
+				>
+					<Plus size={20} />
+					Add Color</button
+				>
 			<div>
 				<h2>Color Variables</h2>
 				<p>Define your color variables and their base colors</p>
 			</div>
 			{#each colorSets as cs, index (cs.id)}
-				<div class="flex gap-4" in:slide out:slid>
+				<div class="flex gap-4" in:slide out:slide>
 					<div class="flex flex-1 flex-col gap-4">
 						<label for={'variableName-' + cs.id} class="font-medium text-nowrap"
 							>CSS VAR #{index + 1}:</label
@@ -244,6 +255,7 @@
 							<button
 								class="rounded px-4 py-2 font-bold text-white hover:bg-gray-200"
 								onclick={() => {
+									console.log('Remove color set:', cs.id);
 									removeColorSet(cs.id);
 									generateAndDisplayShades();
 								}}
@@ -266,34 +278,81 @@
 				<p>Preview all generated color variations</p>
 			</div>
 			<div class="flex w-full flex-col gap-4 rounded-lg bg-white">
-				<label class="tooltip rounded font-medium text-black" for="colorMode"
-					>Color Mode:
-					<span class="tooltip-text">
-						With dropdown selected you can use arrow keys (up and down) to change mode
-					</span>
-				</label>
-				<select
-					id="colorMode"
-					bind:value={colorMode}
-					class="rounded border border-gray-200 p-2"
-					onchange={generateAndDisplayShades}
-				>
-					{#each Object.entries(colorModeTooltip) as [mode, tooltip]}
-						<option value={mode}>{tooltip}</option>
-					{/each}
-				</select>
+				<details open class="rounded-md border border-gray-200 px-4 py-2 font-medium">
+					<summary class="py-4 font-medium">
+						<span class="rounded bg-white px-2 py-1"> Settings </span>
+					</summary>
+					<div class="rounded-lg flex flex-col gap-4 p-4 bg-white">
+						<div class="flex flex-col gap-4">
+							<div class="flex items-center gap-4">
+								<label class="tooltip rounded font-medium text-black" for="colorMode">
+									Color Mode:
+									<span class="tooltip-text">
+										With dropdown selected you can use arrow keys (up and down) to change mode
+									</span>
+								</label>
+							</div>
+
+							<select
+								id="colorMode"
+								bind:value={colorMode}
+								class="rounded border border-gray-200 bg-white p-2"
+								onchange={generateAndDisplayShades}
+							>
+								{#each Object.entries(colorModeTooltip) as [mode, tooltip]}
+									<option value={mode}>{tooltip}</option>
+								{/each}
+							</select>
+						</div>
+						<!-- Added slider for changing scaleGamma -->
+						<div class="flex flex-col gap-4">
+							<label for="scaleGamma" class="font-medium"> Scale Gamma: </label>
+							<div class="flex items-center gap-2">
+								<input
+									type="number"
+									min="0"
+									max="2"
+									step="0.1"
+									bind:value={scaleGamma}
+									onchange={generateAndDisplayShades}
+									class="w-32 rounded border border-gray-300 bg-white px-2 text-center"
+									placeholder="Enter Gamma Value"
+								/>
+								<input
+									type="range"
+									id="scaleGamma"
+									min="0"
+									max="2"
+									step="0.1"
+									bind:value={scaleGamma}
+									onchange={generateAndDisplayShades}
+									class="w-full"
+								/>
+							</div>
+						</div>
+					</div>
+				</details>
 			</div>
-			<div class="grid gap-6">
+			<div>
+				<label class="inline-flex cursor-pointer items-center">
+					<input type="checkbox" value="" class="peer sr-only" bind:checked={previewDarkToggle} />
+					<div
+						class="peer relative h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-black peer-focus:ring-4 peer-focus:outline-none after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full"
+					></div>
+					<span class="ms-3 text-sm font-medium text-gray-900">Dark Background Preview</span>
+				</label>
+			</div>
+			<div class={`grid gap-6 ${previewDarkToggle ? 'rounded bg-gray-900 p-4 text-white' : ''}`}>
 				{#each colorSets as cs}
 					<div class="flex flex-col gap-1 space-y-2">
 						<label class="font-medium" for={cs.varName}>{cs.varName}</label>
 						<div class="grid grid-cols-10 gap-1 overflow-hidden rounded-lg">
-							{#each dummyBoxes.filter((box) => box.varName === cs.varName) as box}
+							{#each dummyBoxes.filter((box) => box.varName === cs.varName) as box, index}
 								<div
-									class="flex items-center justify-center p-2 text-sm font-bold text-white"
+									class="flex min-h-10 items-center justify-center p-2 text-sm font-bold text-white"
 									style="background: {box.cssColor};"
 								>
-									{box.varName}-{box.shade}
+									{index === 9 ? 'Default' : parseInt(box.shade)}
 								</div>
 							{/each}
 						</div>
@@ -329,14 +388,14 @@
 		padding: 2rem;
 	} */
 
-	.code {
+	/* .code {
 		font-size: 0.9rem;
 		color: whitesmoke;
 
-		background-color: var(--color-gray-800); /* Added background color for better contrast */
-		border-radius: 4px; /* Added border radius for aesthetics */
-		padding: 0.5rem; /* Added padding for spacing */
-	}
+		background-color: var(--color-gray-800); 
+		border-radius: 4px; 
+		padding: 0.5rem; 
+	} */
 	.tooltip {
 		position: relative;
 		display: inline-block;
