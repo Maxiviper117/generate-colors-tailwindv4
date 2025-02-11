@@ -238,10 +238,11 @@
 								id={'baseColorText-' + cs.id}
 								class="w-32 rounded border border-gray-200 p-2"
 								type="text"
+								bind:value={cs.baseColor}
 								placeholder="#3498db"
 							/>
 							<button
-								class="rounded px-3 py-1 py-2 font-bold text-white hover:bg-gray-200"
+								class="rounded px-4 py-2 font-bold text-white hover:bg-gray-200"
 								onclick={() => {
 									removeColorSet(cs.id);
 									generateAndDisplayShades();
@@ -264,7 +265,7 @@
 				<h2>Preview Colors</h2>
 				<p>Preview all generated color variations</p>
 			</div>
-			<div class="flex w-full max-w-2xl flex-col gap-4 rounded-lg bg-white">
+			<div class="flex w-full flex-col gap-4 rounded-lg bg-white">
 				<label class="tooltip rounded font-medium text-black" for="colorMode"
 					>Color Mode:
 					<span class="tooltip-text">
