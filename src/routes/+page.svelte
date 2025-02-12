@@ -10,6 +10,7 @@
 	let scaleGamma = $state(1.0);
 	let scalePadding = $state([0.2, 0.2]);
 	let previewDarkToggle = $state(false);
+	let previewGaps = $state(false);
 
 	function reset() {
 		// colorSets = [{ id: 0, varName: 'color-primary', baseColor: '#3498db' }];
@@ -152,10 +153,10 @@
 
 <main class="flex min-h-screen flex-col items-center gap-6 bg-white p-4 pb-36">
 	<div class="container mx-auto flex max-w-[800px] flex-col gap-4">
-		<div class="flex items-center justify-between">
+		<div class="flex items-center justify-center text-center">
 			<div>
-				<h1>Dynamic Shades Generator</h1>
-				<p>Generate CSS color variables for your design system</p>
+				<h1 class="text-5xl">Dynamic Shades Generator</h1>
+				<p class="text-lg font-medium">Generate CSS color variables for your design system</p>
 			</div>
 		</div>
 		<div class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow">
@@ -186,38 +187,18 @@
 				</p>
 			</div>
 		</div>
-		<!-- <div class="flex items-center justify-center">
-			<div class="">
-				<button
-					class="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-4 py-2 font-medium hover:bg-gray-100"
-					onclick={() => {
-						addColorSet();
-						generateAndDisplayShades();
-					}}
-				>
-					<Plus size={20} />
-					Add Color</button
-				>
-				<button
-					class="inline-flex items-center gap-1 rounded-lg bg-black px-4 py-2 font-medium text-white hover:bg-gray-800"
-					onclick={generateAndDisplayShades}
-				>
-					<RefreshCcw size={20} />
-					Generate Variables</button
-				>
-			</div>
-		</div> -->
-		<div class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow relative">
+
+		<div class="relative flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow">
 			<button
-					class="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-4 py-2 font-medium hover:bg-gray-100 absolute top-5 right-5"
-					onclick={() => {
-						addColorSet();
-						generateAndDisplayShades();
-					}}
-				>
-					<Plus size={20} />
-					Add Color</button
-				>
+				class="absolute top-5 right-5 inline-flex items-center gap-1 rounded-lg border border-gray-200 px-4 py-2 font-medium hover:bg-gray-100 active:scale-95 transition hover:scale-105"
+				onclick={() => {
+					addColorSet();
+					generateAndDisplayShades();
+				}}
+			>
+				<Plus size={20} />
+				Add Color</button
+			>
 			<div>
 				<h2>Color Variables</h2>
 				<p>Define your color variables and their base colors</p>
@@ -282,7 +263,7 @@
 					<summary class="py-4 font-medium">
 						<span class="rounded bg-white px-2 py-1"> Settings </span>
 					</summary>
-					<div class="rounded-lg flex flex-col gap-4 p-4 bg-white">
+					<div class="flex flex-col gap-4 rounded-lg bg-white p-4">
 						<div class="flex flex-col gap-4">
 							<div class="flex items-center gap-4">
 								<label class="tooltip rounded font-medium text-black" for="colorMode">
@@ -333,26 +314,40 @@
 					</div>
 				</details>
 			</div>
-			<div>
+			<div class="flex flex-col gap-4">
 				<label class="inline-flex cursor-pointer items-center">
 					<input type="checkbox" value="" class="peer sr-only" bind:checked={previewDarkToggle} />
 					<div
-						class="peer relative h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-black peer-focus:ring-4 peer-focus:outline-none after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full"
+						class="peer relative h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-gray-800  after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full"
 					></div>
 					<span class="ms-3 text-sm font-medium text-gray-900">Dark Background Preview</span>
 				</label>
+				<label class="inline-flex cursor-pointer items-center">
+					<input type="checkbox" value="" class="peer sr-only" bind:checked={previewGaps} />
+					<div
+						class="peer relative h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-gray-800  after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full"
+					></div>
+					<span class="ms-3 text-sm font-medium text-gray-900">Remove Gaps</span>
+				</label>
 			</div>
-			<div class={`grid gap-6 ${previewDarkToggle ? 'rounded bg-gray-900 p-4 text-white' : ''}`}>
+			<div class={`grid gap-6 ${previewDarkToggle ? 'rounded-lg bg-gray-900 p-4 text-white' : ''}`}>
 				{#each colorSets as cs}
-					<div class="flex flex-col gap-1 space-y-2">
+					<div class="@container flex flex-col gap-1 space-y-2">
 						<label class="font-medium" for={cs.varName}>{cs.varName}</label>
-						<div class="grid grid-cols-10 gap-1 overflow-hidden rounded-lg">
+						<div
+							class={`grid grid-cols-10 ${!previewGaps ? 'gap-1' : ''} overflow-hidden rounded-lg`}
+						>
 							{#each dummyBoxes.filter((box) => box.varName === cs.varName) as box, index}
 								<div
 									class="flex min-h-10 items-center justify-center p-2 text-sm font-bold text-white"
 									style="background: {box.cssColor};"
 								>
-									{index === 9 ? 'Default' : parseInt(box.shade)}
+									<span class="hidden @md:block">
+										{index === 9 ? 'Base' : parseInt(box.shade)}
+									</span>
+									<span class="@md:hidden">
+										{index === 9 ? 'B' : String(box.shade).substring(0, 1)}
+									</span>
 								</div>
 							{/each}
 						</div>
