@@ -31,7 +31,7 @@ jobs:
         env:
           BASE_PATH: '/${{ github.event.repository.name }}' # Set BASE_PATH using repository name from the event
         run: |
-          npm run build  # Execute the build script defined in package.json
+          pnpm run build  # Execute the build script defined in package.json
 
       - name: Upload Artifacts # Upload the compiled build files as an artifact for deployment
         uses: actions/upload-pages-artifact@v3 # Use the GitHub Pages artifact uploader action version 3
