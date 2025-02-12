@@ -48,16 +48,29 @@ The generated CSS variables can be used within Tailwind's `@theme` directive:
 
 ```css
 @theme {
-	--bg-primary-100: #c5e0f6;
-	--bg-primary-200: #afd4f2;
-	--bg-primary-300: #99c8ee;
-	--bg-primary-400: #83bce9;
-	--bg-primary-500: #6bb0e5;
-	--bg-primary-600: #52a4e0;
-	--bg-primary-700: #3498db;
-	--bg-primary-800: #006dad;
-	--bg-primary-900: #004481;
-	--bg-primary-default: #3498db;
+	/* color-primary */
+	--color-primary-100: #c5e0f6;
+	--color-primary-200: #afd4f2;
+	--color-primary-300: #99c8ee;
+	--color-primary-400: #83bce9;
+	--color-primary-500: #6bb0e5;
+	--color-primary-600: #52a4e0;
+	--color-primary-700: #3498db;
+	--color-primary-800: #006dad;
+	--color-primary-900: #004481;
+	--color-primary-default: #3498db;
+
+	/* color-secondary */
+	--color-secondary-100: #f6e5c5;
+	--color-secondary-200: #f2d9af;
+	--color-secondary-300: #eecc99;
+	--color-secondary-400: #e9c083;
+	--color-secondary-500: #e5b66b;
+	--color-secondary-600: #e0aa52;
+	--color-secondary-700: #dba034;
+	--color-secondary-800: #ad6d00;
+	--color-secondary-900: #815400;
+	--color-secondary-default: #dba034;
 }
 ```
 

@@ -1,3 +1,5 @@
+# .github/workflows/deploy.yml
+
 name: Deploy to GitHub Pages # Define the name of the workflow
 
 on:
@@ -6,6 +8,7 @@ on:
 
 jobs:
   build_site:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest # Use the latest Ubuntu runner for this job
     steps:
       - name: Checkout # Task to checkout repository content
