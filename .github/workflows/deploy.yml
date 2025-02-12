@@ -41,6 +41,7 @@ jobs:
 
   deploy:
     needs: build_site # Ensure that the deploy job runs after build_site completes successfully
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest # Use an Ubuntu runner for the deploy phase
 
     permissions:
