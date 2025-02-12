@@ -63,4 +63,4 @@ The generated CSS variables can be used within Tailwind's `@theme` directive:
 
 ## License
 
-MIT
+[GPL](https://github.com/Maxiviper117/generate-colors-tailwindv4#GPL-3.0-1-ov-file)
