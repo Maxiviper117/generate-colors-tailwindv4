@@ -151,6 +151,12 @@
 	</style>
 </svelte:head>
 
+{#snippet tooltip(text: string)}
+	<span class="tooltip-text">
+		{text}
+	</span>
+{/snippet}
+
 <main class="flex min-h-screen flex-col items-center gap-6 bg-white p-4 pb-36">
 	<div class="container mx-auto flex max-w-[800px] flex-col gap-4">
 		<div class="flex items-center justify-center text-center">
@@ -190,7 +196,7 @@
 
 		<div class="relative flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow">
 			<button
-				class="absolute top-5 right-5 inline-flex items-center gap-1 rounded-lg border border-gray-200 px-4 py-2 font-medium hover:bg-gray-100 active:scale-95 transition hover:scale-105"
+				class="absolute top-5 right-5 inline-flex items-center gap-1 rounded-lg border border-gray-200 px-4 py-2 font-medium transition hover:scale-105 hover:bg-gray-100 active:scale-95"
 				onclick={() => {
 					addColorSet();
 					generateAndDisplayShades();
@@ -268,9 +274,12 @@
 							<div class="flex items-center gap-4">
 								<label class="tooltip rounded font-medium text-black" for="colorMode">
 									Color Mode:
-									<span class="tooltip-text">
+									<!-- <span class="tooltip-text">
 										With dropdown selected you can use arrow keys (up and down) to change mode
-									</span>
+									</span> -->
+									{@render tooltip(
+										'With dropdown selected you can use arrow keys (up and down) to change mode'
+									)}
 								</label>
 							</div>
 
@@ -287,7 +296,13 @@
 						</div>
 						<!-- Added slider for changing scaleGamma -->
 						<div class="flex flex-col gap-4">
-							<label for="scaleGamma" class="font-medium"> Scale Gamma: </label>
+							<label for="scaleGamma" class="font-medium tooltip">
+								Scale Gamma:{@render tooltip(
+									'Gamma correction is a nonlinear operation used to encode and decode luminance or tristimulus values in video or still image systems.' +
+										' It is used to adjust the brightness of an image, making it appear more natural to the human eye.' +
+										' A gamma value of 1.0 means no correction, while values less than 1.0 darken the image and values greater than 1.0 brighten it.'
+								)}
+							</label>
 							<div class="flex items-center gap-2">
 								<input
 									type="number"
@@ -318,14 +333,14 @@
 				<label class="inline-flex cursor-pointer items-center">
 					<input type="checkbox" value="" class="peer sr-only" bind:checked={previewDarkToggle} />
 					<div
-						class="peer relative h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-gray-800  after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full"
+						class="peer relative h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-gray-800 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full"
 					></div>
 					<span class="ms-3 text-sm font-medium text-gray-900">Dark Background Preview</span>
 				</label>
 				<label class="inline-flex cursor-pointer items-center">
 					<input type="checkbox" value="" class="peer sr-only" bind:checked={previewGaps} />
 					<div
-						class="peer relative h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-gray-800  after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full"
+						class="peer relative h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-gray-800 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full"
 					></div>
 					<span class="ms-3 text-sm font-medium text-gray-900">Remove Gaps</span>
 				</label>
@@ -399,7 +414,7 @@
 	.tooltip-text {
 		opacity: 0;
 		visibility: hidden;
-		width: 100%; /* Changed from 100 to 100% for proper width definition */
+		width: 280px; /* Fixed width instead of 100% */
 		max-width: 500px; /* Set the maximum width */
 		background-color: rgba(0, 0, 0, 1);
 		color: #fff;
