@@ -501,7 +501,7 @@
 				</Highlight>
 
 				<button
-					class="absolute top-0 right-0 mt-4 mr-4 inline-flex items-baseline gap-1 rounded border border-gray-200 px-2 text-sm text-white transition hover:scale-105 hover:border-gray-500 hover:bg-gray-700 hover:shadow-[0px_0px_10px_rgba(255,255,255,1)] active:scale-95"
+					class="absolute top-0 right-0 mt-4 mr-4 inline-flex items-baseline gap-1 rounded border  z-10 border-gray-200 px-2 text-sm text-white transition hover:scale-105 hover:border-gray-500 hover:bg-gray-700 hover:shadow-[0px_0px_10px_rgba(255,255,255,1)] active:scale-95"
 					onclick={copyToClipboard}
 				>
 					<Copy color="white" size={10} class="" />
