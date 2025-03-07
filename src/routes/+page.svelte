@@ -355,15 +355,17 @@
 					<div class="flex flex-col gap-4 rounded-lg bg-white p-4">
 						<div class="flex flex-col gap-4">
 							<div class="flex items-center gap-4">
-								<label class="tooltip rounded font-medium text-black" for="colorMode">
+								<!-- <label class="tooltip rounded font-medium text-black" for="colorMode">
 									Color Mode:
-									<!-- <span class="tooltip-text">
-										With dropdown selected you can use arrow keys (up and down) to change mode
-									</span> -->
+					
 									{@render tooltip(
 										'With dropdown selected you can use arrow keys (up and down) to change mode'
 									)}
-								</label>
+								</label> -->
+								<Label class="text-lg">Color Mode</Label>
+								<Tooltip class="max-w-xl">
+									With dropdown selected you can use arrow keys (up and down) to change mode
+								</Tooltip>
 							</div>
 
 							<select
@@ -379,13 +381,24 @@
 						</div>
 						<!-- Added slider for changing scaleGamma -->
 						<div class="flex flex-col gap-4">
-							<label for="scaleGamma" class="tooltip font-medium">
+							<!-- <label for="scaleGamma" class="tooltip font-medium">
 								Scale Gamma:{@render tooltip(
 									'Gamma correction is a nonlinear operation used to encode and decode luminance or tristimulus values in video or still image systems.' +
 										' It is used to adjust the brightness of an image, making it appear more natural to the human eye.' +
 										' A gamma value of 1.0 means no correction, while values less than 1.0 darken the image and values greater than 1.0 brighten it.'
 								)}
-							</label>
+							</label> -->
+							<div class="w-fit">
+								<Label class="text-lg">Scale Gamma</Label>
+
+								<Tooltip class="max-w-xl">
+									Gamma correction is a nonlinear operation used to encode and decode luminance or
+									tristimulus values in video or still image systems. It is used to adjust the
+									brightness of an image, making it appear more natural to the human eye. A gamma
+									value of 1.0 means no correction, while values less than 1.0 darken the image and
+									values greater than 1.0 brighten it.
+								</Tooltip>
+							</div>
 							<div class="flex flex-wrap items-center gap-2 @md:flex-nowrap">
 								<input
 									type="number"
@@ -513,9 +526,7 @@
 			data-coffee-color="#ffffff"
 		></script>
 		<div>
-			<p>
-				❤️ If you find this tool useful, consider supporting me by buying me a coffee! ☕
-			</p>
+			<p>❤️ If you find this tool useful, consider supporting me by buying me a coffee! ☕</p>
 		</div>
 		<a href="https://www.buymeacoffee.com/davig" target="_blank"
 			><img
