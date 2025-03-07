@@ -6,10 +6,10 @@
 	import css from 'svelte-highlight/languages/css';
 	import Highlight, { LineNumbers } from 'svelte-highlight';
 	import { onMount } from 'svelte';
-	import { Checkbox, Label } from 'flowbite-svelte';
+	import { Checkbox, Label, Card, Button, Toggle ,Tooltip} from 'flowbite-svelte';
 
 	// Array of color set objects; each one has an id, variable name, and a base color.
-	let colorSets = $state([{ id: 0, varName: 'color-primary', baseColor: '#3498db' }]);
+	let colorSets = $state([{ id: 0, varName: 'primary', baseColor: '#3498db' }]);
 	let colorSetCounter = 1; // Next id to use
 	let scaleCorrectLightness = $state(false);
 	let scaleGamma = $state(1.0);
@@ -18,7 +18,7 @@
 	let previewGaps = $state(false);
 
 	let predefinedTWNames = $state({
-		primary: false,
+		primary: true,
 		secondary: false,
 		tertiary: false,
 		accent: false,
@@ -29,6 +29,7 @@
 
 	function reset() {
 		// colorSets = [{ id: 0, varName: 'color-primary', baseColor: '#3498db' }];
+		colorSets = [{ id: 0, varName: 'primary', baseColor: '#3498db' }];
 		colorSetCounter = 1;
 		scaleCorrectLightness = false;
 		scaleGamma = 1.0;
@@ -94,19 +95,21 @@
 			.domain([0, 0.65, 1])
 			.padding(scalePadding)
 			.mode(colorMode)
-			.colors(9);
+			.colors(11); // Changed from 9 to 11 colors
 
 		return {
+			50: scale[0], // Added 50 shade
+			100: scale[1],
+			200: scale[2],
+			300: scale[3],
+			400: scale[4],
+			500: scale[5],
 			DEFAULT: baseColor,
-			100: scale[0],
-			200: scale[1],
-			300: scale[2],
-			400: scale[3],
-			500: scale[4],
-			600: scale[5],
-			700: scale[6],
-			800: scale[7],
-			900: scale[8]
+			600: scale[6],
+			700: scale[7],
+			800: scale[8],
+			900: scale[9],
+			950: scale[10] // Added 950 shade
 		};
 	}
 
@@ -127,7 +130,7 @@
 			// For every shade add the CSS variable declaration and prepare a dummy box preview.
 			for (const [shade, value] of Object.entries(shades)) {
 				const finalShade = shade === 'DEFAULT' ? 'default' : shade;
-				output += `  --${varName}-${finalShade}: ${value};\n`;
+				output += `  --color-${varName}-${finalShade}: ${value};\n`;
 				boxes.push({
 					varName,
 					shade,
@@ -160,7 +163,7 @@
 	$effect(() => {
 		// Process each predefined color name
 		Object.entries(predefinedTWNames).forEach(([name, isChecked]) => {
-			const varName = `color-${name}`;
+			const varName = name;
 			const existingIndex = colorSets.findIndex((cs) => cs.varName === varName);
 
 			if (isChecked && existingIndex === -1) {
@@ -204,7 +207,8 @@
 				<p class="text-lg font-medium">Generate CSS color variables for your design system</p>
 			</div>
 		</div>
-		<div class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow">
+		<Card size="none">
+			<!-- <div class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow"> -->
 			<div class="flex max-w-2xl flex-col gap-4">
 				<p>
 					The purpose of this tool is to generate CSS variables for different shades of a base
@@ -231,27 +235,39 @@
 					>.
 				</p>
 			</div>
-		</div>
-
-		<div class="relative flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow">
-			<button
-				class="absolute top-5 right-5 inline-flex items-center gap-1 rounded-lg border border-gray-200 px-4 py-2 font-medium transition hover:scale-105 hover:bg-gray-100 active:scale-95"
-				onclick={() => {
-					addColorSet();
-					generateAndDisplayShades();
-				}}
-			>
-				<Plus size={20} />
-				Add Color</button
-			>
-			<div>
+			<!-- </div> -->
+		</Card>
+		<Card size="none" class="flex flex-col gap-4">
+			<!-- <div class=" flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow"> -->
+			<div class="flex flex-wrap items-center justify-between gap-4">
 				<h2 class="">Color Variables</h2>
-				<p>
-					Define your own color variables and their base colors or choose from predefined common color
-					palletes names.
-				</p>
+				<!-- <button
+					class="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-4 py-2 font-medium transition hover:scale-105 hover:bg-gray-100 active:scale-95"
+					onclick={() => {
+						addColorSet();
+						generateAndDisplayShades();
+					}}
+				>
+					<Plus size={20} />
+					Add Color</button
+				> -->
+				<Button
+					size="sm"
+					class="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-4 py-2 font-medium text-gray-700 transition hover:scale-105 hover:bg-gray-100 active:scale-95"
+					onclick={() => {
+						addColorSet();
+						generateAndDisplayShades();
+					}}
+				>
+					<Plus size={20} />
+					Add Color
+				</Button>
 			</div>
-			<div class="flex gap-4">
+			<p>
+				Define your own color variables and their base colors or choose from predefined common color
+				palletes names.
+			</p>
+			<div class="flex flex-wrap gap-4">
 				<Label class="flex gap-2">
 					Primary
 					<Checkbox value="primary" bind:checked={predefinedTWNames.primary} />
@@ -274,7 +290,7 @@
 				</Label>
 			</div>
 			{#each colorSets as cs, index (cs.id)}
-				<div class="flex gap-4" in:slide out:slide>
+				<div class=" flex flex-wrap gap-4 rounded p-2 shadow" in:slide out:slide>
 					<div class="flex flex-1 flex-col gap-4">
 						<label for={'variableName-' + cs.id} class="font-medium text-nowrap"
 							>CSS VAR #{index + 1}:</label
@@ -318,12 +334,15 @@
 					</div>
 				</div>
 			{/each}
-		</div>
-		<div
-			class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow"
-			in:slide
-			out:slide
-		>
+			<!-- </div> -->
+		</Card>
+		<!--  -->
+		<Card size="none" class="flex flex-col gap-4 ">
+			<!-- <div
+				class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow"
+				in:slide
+				out:slide
+			> -->
 			<div>
 				<h2>Preview Colors</h2>
 				<p>Preview all generated color variations</p>
@@ -350,11 +369,11 @@
 							<select
 								id="colorMode"
 								bind:value={colorMode}
-								class="rounded border border-gray-200 bg-white p-2"
+								class="rounded border border-gray-200 bg-white p-2 text-[clamp(0.8rem,2vw,1rem)]"
 								onchange={generateAndDisplayShades}
 							>
 								{#each Object.entries(colorModeTooltip) as [mode, tooltip]}
-									<option value={mode}>{tooltip}</option>
+									<option value={mode} class="text-[clamp(0.8rem,2vw,1rem)]">{tooltip}</option>
 								{/each}
 							</select>
 						</div>
@@ -367,7 +386,7 @@
 										' A gamma value of 1.0 means no correction, while values less than 1.0 darken the image and values greater than 1.0 brighten it.'
 								)}
 							</label>
-							<div class="flex items-center gap-2">
+							<div class="flex flex-wrap items-center gap-2 @md:flex-nowrap">
 								<input
 									type="number"
 									min="0"
@@ -386,55 +405,71 @@
 									step="0.1"
 									bind:value={scaleGamma}
 									onchange={generateAndDisplayShades}
-									class="w-full"
+									class="min-w-xs flex-1"
 								/>
 							</div>
 						</div>
 					</div>
 				</details>
 			</div>
-			<div class="flex flex-col gap-4">
-				<label class="inline-flex cursor-pointer items-center">
+			<div class="flex flex-col gap-4 w-fit">
+				<!-- <label class="inline-flex cursor-pointer items-center">
 					<input type="checkbox" value="" class="peer sr-only" bind:checked={previewDarkToggle} />
 					<div
-						class="peer relative h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-gray-800 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full"
+					class="peer relative h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-gray-800 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full"
 					></div>
 					<span class="ms-3 text-sm font-medium text-gray-900">Dark Background Preview</span>
-				</label>
-				<label class="inline-flex cursor-pointer items-center">
+					</label> -->
+				<Toggle bind:checked={previewDarkToggle}>Dark Background Preview</Toggle>
+				<Tooltip>
+					This toggle allows you to preview the colors on a dark background. 
+				</Tooltip>
+				<!-- <label class="inline-flex cursor-pointer items-center">
 					<input type="checkbox" value="" class="peer sr-only" bind:checked={previewGaps} />
 					<div
 						class="peer relative h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-gray-800 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full"
 					></div>
 					<span class="ms-3 text-sm font-medium text-gray-900">Remove Gaps</span>
-				</label>
+				</label> -->
+				<Toggle bind:checked={previewGaps}>Remove Gaps</Toggle>
+				<Tooltip>
+					This toggle allows you to remove the gaps between the color boxes in the preview.
+				</Tooltip>
 			</div>
 			<div class={`grid gap-6 ${previewDarkToggle ? 'rounded-lg bg-gray-900 p-4 text-white' : ''}`}>
 				{#each colorSets as cs}
 					<div class="@container flex flex-col gap-1 space-y-2">
-						<label class="font-medium" for={cs.varName}>{cs.varName}</label>
+						<label class="font-medium" for={cs.varName}>--color-{cs.varName}</label>
+						<!-- class={`grid grid-cols-11 ${!previewGaps ? 'gap-1' : ''} overflow-hidden rounded-lg`} -->
 						<div
-							class={`grid grid-cols-10 ${!previewGaps ? 'gap-1' : ''} overflow-hidden rounded-lg`}
+							class={[
+								'grid grid-cols-6',
+								'@md:grid-cols-12',
+								`${!previewGaps ? 'gap-1' : ''}`,
+								'overflow-hidden rounded-lg'
+							]}
 						>
 							{#each dummyBoxes.filter((box) => box.varName === cs.varName) as box, index}
 								<div
 									class="flex min-h-10 items-center justify-center p-2 text-sm font-bold text-white"
 									style="background: {box.cssColor};"
 								>
-									<span class="hidden @md:block">
-										{index === 9 ? 'Base' : parseInt(box.shade)}
+									<span class="rotate-45 transition-all @md:rotate-0">
+										{box.shade === 'DEFAULT' ? 'Base' : box.shade}
 									</span>
-									<span class="@md:hidden">
-										{index === 9 ? 'B' : String(box.shade).substring(0, 1)}
-									</span>
+									<!-- <span class="@md:hidden  rotate-90">
+										{box.shade === 'DEFAULT' ? 'B' : String(box.shade).substring(0, 1)}
+									</span> -->
 								</div>
 							{/each}
 						</div>
 					</div>
 				{/each}
 			</div>
-		</div>
-		<div class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow">
+			<!-- </div> -->
+		</Card>
+		<Card size="none" class="flex flex-col gap-4">
+			<!-- <div class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 shadow"> -->
 			<div>
 				<h2>Generated Code</h2>
 				<p>CSS variables for your design system</p>
@@ -462,7 +497,8 @@
 					copy
 				</button>
 			</div>
-		</div>
+			<!-- </div> -->
+		</Card>
 	</div>
 </main>
 
