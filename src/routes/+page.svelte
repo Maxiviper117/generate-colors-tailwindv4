@@ -6,7 +6,7 @@
 	import css from 'svelte-highlight/languages/css';
 	import Highlight, { LineNumbers } from 'svelte-highlight';
 	import { onMount } from 'svelte';
-	import { Checkbox, Label, Card, Button, Toggle ,Tooltip} from 'flowbite-svelte';
+	import { Checkbox, Label, Card, Button, Toggle, Tooltip } from 'flowbite-svelte';
 
 	// Array of color set objects; each one has an id, variable name, and a base color.
 	let colorSets = $state([{ id: 0, varName: 'primary', baseColor: '#3498db' }]);
@@ -412,7 +412,7 @@
 					</div>
 				</details>
 			</div>
-			<div class="flex flex-col gap-4 w-fit">
+			<div class="flex w-fit flex-col gap-4">
 				<!-- <label class="inline-flex cursor-pointer items-center">
 					<input type="checkbox" value="" class="peer sr-only" bind:checked={previewDarkToggle} />
 					<div
@@ -421,9 +421,7 @@
 					<span class="ms-3 text-sm font-medium text-gray-900">Dark Background Preview</span>
 					</label> -->
 				<Toggle bind:checked={previewDarkToggle}>Dark Background Preview</Toggle>
-				<Tooltip>
-					This toggle allows you to preview the colors on a dark background. 
-				</Tooltip>
+				<Tooltip>This toggle allows you to preview the colors on a dark background.</Tooltip>
 				<!-- <label class="inline-flex cursor-pointer items-center">
 					<input type="checkbox" value="" class="peer sr-only" bind:checked={previewGaps} />
 					<div
@@ -499,6 +497,33 @@
 			</div>
 			<!-- </div> -->
 		</Card>
+	</div>
+	<div class="flex flex-col items-center gap-4 py-20">
+		<script
+			type="text/javascript"
+			src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+			data-name="bmc-button"
+			data-slug="davig"
+			data-color="#FFDD00"
+			data-emoji="☕"
+			data-font="Cookie"
+			data-text="Buy me a coffee"
+			data-outline-color="#000000"
+			data-font-color="#000000"
+			data-coffee-color="#ffffff"
+		></script>
+		<div>
+			<p>
+				❤️ If you find this tool useful, consider supporting me by buying me a coffee! ☕
+			</p>
+		</div>
+		<a href="https://www.buymeacoffee.com/davig" target="_blank"
+			><img
+				src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+				alt="Buy Me A Coffee"
+				style="height: 40px !important;width: 140px !important;"
+			/></a
+		>
 	</div>
 </main>
 
