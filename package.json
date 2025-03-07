@@ -23,7 +23,10 @@
 		"eslint": "^9.20.0",
 		"eslint-config-prettier": "^10.0.1",
 		"eslint-plugin-svelte": "^2.46.1",
+		"flowbite": "^3.1.2",
+		"flowbite-svelte": "^0.48.4",
 		"globals": "^15.14.0",
+		"highlight.js": "^11.11.1",
 		"prettier": "^3.5.0",
 		"prettier-plugin-svelte": "^3.3.3",
 		"prettier-plugin-tailwindcss": "^0.6.11",
@@ -42,6 +45,7 @@
 	"dependencies": {
 		"@types/chroma-js": "^3.1.1",
 		"chroma-js": "^3.1.2",
-		"lucide-svelte": "^0.475.0"
+		"lucide-svelte": "^0.475.0",
+		"svelte-highlight": "^7.8.2"
 	}
 }

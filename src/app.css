@@ -1,30 +1,35 @@
 @import 'tailwindcss';
 
+@plugin 'flowbite/plugin';
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --radius-sm: 0.125rem;
-    --radius-md: 0.375rem; /* Added medium radius variable */
-    --radius-lg: 0.5rem;  /* Added large radius variable */
-    --radius-xl: 0.75rem; /* Added extra large radius variable */
+	--color-primary-100: #c5e0f6;
+	--color-primary-200: #afd4f2;
+	--color-primary-300: #99c8ee;
+	--color-primary-400: #83bce9;
+	--color-primary-500: #6bb0e5;
+	--color-primary-600: #52a4e0;
+	--color-primary-700: #3498db;
+	--color-primary-800: #236d9e;
+	--color-primary-900: #134466;
+	--color-primary-default: #3498db;
 }
-
 
 @layer base {
-
-    h1 {
-        @apply text-2xl font-bold;
-    }
-    
-
-    h2 {
-        @apply text-xl font-bold;
-    }
-
-    h3 {
-        @apply text-lg font-medium;
-    }
-    
-    p {
-        @apply text-base text-gray-700;
-    }
+	h1 {
+		@apply text-3xl font-bold;
+	}
+	h2 {
+		@apply text-2xl font-bold;
+	}
+	h3 {
+		@apply text-xl font-bold;
+	}
+	p {
+		@apply text-base text-gray-700;
+	}
 }
+
+@source "../node_modules/flowbite-svelte/dist";
