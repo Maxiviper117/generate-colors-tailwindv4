@@ -2,6 +2,11 @@
 	import chroma from 'chroma-js';
 	import { Copy, Plus, RefreshCcw, Trash2 } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
+	import github from 'svelte-highlight/styles/github-dark';
+	import css from 'svelte-highlight/languages/css';
+	import Highlight, { LineNumbers } from 'svelte-highlight';
+	import { onMount } from 'svelte';
+	import { Checkbox, Label } from 'flowbite-svelte';
 
 	// Array of color set objects; each one has an id, variable name, and a base color.
 	let colorSets = $state([{ id: 0, varName: 'color-primary', baseColor: '#3498db' }]);
@@ -11,6 +16,16 @@
 	let scalePadding = $state([0.2, 0.2]);
 	let previewDarkToggle = $state(false);
 	let previewGaps = $state(false);
+
+	let predefinedTWNames = $state({
+		primary: false,
+		secondary: false,
+		tertiary: false,
+		accent: false,
+		neutral: false
+	});
+
+	$inspect({ predefinedTWNames });
 
 	function reset() {
 		// colorSets = [{ id: 0, varName: 'color-primary', baseColor: '#3498db' }];
@@ -97,7 +112,7 @@
 
 	// Generate the CSS variables output and create dummy boxes for preview.
 	function generateAndDisplayShades() {
-		let output = `:root {\n`;
+		let output = `@theme {\n`;
 		let boxes = [];
 
 		// Process each color set
@@ -141,6 +156,29 @@
 	$effect(() => {
 		generateAndDisplayShades();
 	});
+
+	$effect(() => {
+		// Process each predefined color name
+		Object.entries(predefinedTWNames).forEach(([name, isChecked]) => {
+			const varName = `color-${name}`;
+			const existingIndex = colorSets.findIndex((cs) => cs.varName === varName);
+
+			if (isChecked && existingIndex === -1) {
+				// Add a new color set if checked and doesn't exist
+				colorSets = [
+					...colorSets,
+					{ id: colorSetCounter, varName, baseColor: chroma.random().hex() }
+				];
+				colorSetCounter += 1;
+			} else if (!isChecked && existingIndex !== -1) {
+				// Remove color set if unchecked and exists
+				colorSets = colorSets.filter((cs) => cs.varName !== varName);
+			}
+		});
+
+		// Update the generated shades after modifying the color sets
+		generateAndDisplayShades();
+	});
 </script>
 
 <!-- Inject the dynamic CSS variables into the document head -->
@@ -149,6 +187,7 @@
 	<style id="dynamicCSS">
 {cssOutput}
 	</style>
+	{@html github}
 </svelte:head>
 
 {#snippet tooltip(text: string)}
@@ -206,8 +245,33 @@
 				Add Color</button
 			>
 			<div>
-				<h2>Color Variables</h2>
-				<p>Define your color variables and their base colors</p>
+				<h2 class="">Color Variables</h2>
+				<p>
+					Define your own color variables and their base colors or choose from predefined common color
+					palletes names.
+				</p>
+			</div>
+			<div class="flex gap-4">
+				<Label class="flex gap-2">
+					Primary
+					<Checkbox value="primary" bind:checked={predefinedTWNames.primary} />
+				</Label>
+				<Label class="flex gap-2">
+					Secondary
+					<Checkbox value="secondary" bind:checked={predefinedTWNames.secondary} />
+				</Label>
+				<Label class="flex gap-2">
+					Tertiary
+					<Checkbox value="tertiary" bind:checked={predefinedTWNames.tertiary} />
+				</Label>
+				<Label class="flex gap-2">
+					Accent
+					<Checkbox value="accent" bind:checked={predefinedTWNames.accent} />
+				</Label>
+				<Label class="flex gap-2">
+					Neutral
+					<Checkbox value="neutral" bind:checked={predefinedTWNames.neutral} />
+				</Label>
 			</div>
 			{#each colorSets as cs, index (cs.id)}
 				<div class="flex gap-4" in:slide out:slide>
@@ -296,7 +360,7 @@
 						</div>
 						<!-- Added slider for changing scaleGamma -->
 						<div class="flex flex-col gap-4">
-							<label for="scaleGamma" class="font-medium tooltip">
+							<label for="scaleGamma" class="tooltip font-medium">
 								Scale Gamma:{@render tooltip(
 									'Gamma correction is a nonlinear operation used to encode and decode luminance or tristimulus values in video or still image systems.' +
 										' It is used to adjust the brightness of an image, making it appear more natural to the human eye.' +
@@ -375,12 +439,21 @@
 				<h2>Generated Code</h2>
 				<p>CSS variables for your design system</p>
 			</div>
-			<div class="relative mt-4 w-full">
-				<code
+			<div class="relative mt-4 w-full overflow-hidden rounded-xl">
+				<!-- <code
 					class="block w-full overflow-x-auto rounded bg-gray-800 p-4 whitespace-pre-wrap text-white"
 				>
 					{cssOutput}
-				</code>
+				</code> -->
+
+				<Highlight language={css} code={cssOutput} let:highlighted>
+					<LineNumbers
+						{highlighted}
+						highlightedLines={[16]}
+						--highlighted-background="rgba(150, 203, 254, 0.2)"
+					/>
+				</Highlight>
+
 				<button
 					class="absolute top-0 right-0 mt-4 mr-4 inline-flex items-baseline gap-1 rounded border border-gray-200 px-2 text-sm text-white transition hover:scale-105 hover:border-gray-500 hover:bg-gray-700 hover:shadow-[0px_0px_10px_rgba(255,255,255,1)] active:scale-95"
 					onclick={copyToClipboard}
